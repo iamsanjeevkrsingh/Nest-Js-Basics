@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
@@ -16,4 +16,7 @@ export class Product {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ nullable: true })
+  imageUrl: string;
 }
