@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductCategory } from './product-category.enums';
 
 @Entity('products')
 export class Product {
@@ -19,4 +20,7 @@ export class Product {
 
   @Column({ nullable: true })
   imageUrl: string;
+
+  @Column({ type: 'enum', enum: ProductCategory, default: ProductCategory.MEN })
+  category: ProductCategory;
 }
