@@ -1,45 +1,43 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Product } from './product.model';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from './product.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
-  private products: Product[] = [];
+  constructor(
+    @InjectRepository(Product)
+    private productsRepository: Repository<Product>,
+  ) {}
 
-  insertProduct(title: string, desc: string, price: number) {
-    const prodId = Math.random().toString();
-    const newProduct = new Product(prodId, title, desc, price);
-    this.products.push(newProduct);
-    return prodId;
+  findAll(): Promise<Product[]> {
+    return new Promise((resolve, reject) => {
+      this.productsRepository
+        .find()
+        .then((products) => resolve(products))
+        .catch((err) => reject(err));
+    });
   }
 
-  getProducts() {
-    return [...this.products];
+  findOne(id: number): Promise<Product | null> {
+    return new Promise((resolve, reject) => {
+      this.productsRepository
+        .findOneBy({ id })
+        .then((product) => resolve(product))
+        .catch((err) => reject(err));
+    });
   }
 
-  getProduct(productId: string) {
-    const [product] = this.findProduct(productId);
-    return { ...product };
-  }
-
-  updateProduct(productId: string, title: string, desc: string, price: number) {
-    const [product, index] = this.findProduct(productId);
-    this.products[index] = {
-      ...product,
-      ...(title ? { title } : {}),
-      ...(desc ? { desc } : {}),
-      ...(price ? { price } : {}),
-    };
-  }
-
-  deleteProduct(productId: string) {
-    const products = this.products.filter((key) => key.id !== productId);
-    this.products = products;
-  }
-
-  private findProduct(id: string): [Product, number] {
-    const productIndex = this.products.findIndex((prod) => prod.id === id);
-    const product = this.products[productIndex];
-    if (!product) throw new NotFoundException('Could not find product!');
-    return [product, productIndex];
+  create(title: string, description: string, price: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.productsRepository
+        .insert({
+          title: title,
+          description: description,
+          price: price,
+        })
+        .then((product) => resolve(product))
+        .catch((err) => reject(err));
+    });
   }
 }

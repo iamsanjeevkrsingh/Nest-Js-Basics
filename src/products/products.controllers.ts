@@ -1,63 +1,47 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  Param,
-  Patch,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { ProductsService } from './products.service';
 
-@Controller('products')
+@Controller('api')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post()
-  addProduct(
-    // @Body completeBody : {title: string, description: string, price: number}
+  @Post('product')
+  createProduct(
     @Body('title') prodTitle: string,
     @Body('description') prodDesc: string,
     @Body('price') prodPrice: number,
   ) {
-    const prodId = this.productsService.insertProduct(
-      prodTitle,
-      prodDesc,
-      prodPrice,
-    );
-    return {
-      id: prodId,
-    };
+    return this.productsService.create(prodTitle, prodDesc, prodPrice);
   }
 
-  @Get()
-  getAllProducts() {
-    return this.productsService.getProducts();
+  @Get('products')
+  getProducts() {
+    return this.productsService.findAll();
   }
 
-  @Get(':id')
-  getProduct(@Param('id') productId: string) {
-    return this.productsService.getProduct(productId);
+  @Get('products/:id')
+  getProduct(@Param('id') productId: number) {
+    return this.productsService.findOne(productId);
   }
 
-  @Patch(':id')
-  updateProduct(
-    @Param('id') prodId: string,
-    @Body('title') prodTitle: string,
-    @Body('description') prodDesc: string,
-    @Body('price') prodPrice: number,
-  ) {
-    return this.productsService.updateProduct(
-      prodId,
-      prodTitle,
-      prodDesc,
-      prodPrice,
-    );
-  }
+  // @Patch(':id')
+  // updateProduct(
+  //   @Param('id') prodId: string,
+  //   @Body('title') prodTitle: string,
+  //   @Body('description') prodDesc: string,
+  //   @Body('price') prodPrice: number,
+  // ) {
+  //   return this.productsService.updateProduct(
+  //     prodId,
+  //     prodTitle,
+  //     prodDesc,
+  //     prodPrice,
+  //   );
+  // }
 
-  @Delete(':id')
-  removeProduct(@Param('id') prodId: string) {
-    this.productsService.deleteProduct(prodId);
-    return null;
-  }
+  // @Delete(':id')
+  // removeProduct(@Param('id') prodId: string) {
+  //   this.productsService.deleteProduct(prodId);
+  //   return null;
+  // }
 }
